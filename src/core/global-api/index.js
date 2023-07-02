@@ -34,6 +34,7 @@ export function initGlobalAPI (Vue: GlobalAPI) {
   // exposed util methods.
   // NOTE: these are not considered part of the public API - avoid relying on
   // them unless you are aware of the risk.
+  // 给构造器添加对象属性，这种方式添加的属性，在new出来的对象中是拿不到的，要么只能通过对象.constructor.util才能拿到绑定在构造器上的属性
   Vue.util = {
     warn,
     extend,
@@ -60,10 +61,11 @@ export function initGlobalAPI (Vue: GlobalAPI) {
   // components with in Weex's multi-instance scenarios.
   Vue.options._base = Vue
 
+  // 让子组件继承KeepAlive
   extend(Vue.options.components, builtInComponents)
 
-  initUse(Vue)
-  initMixin(Vue)
-  initExtend(Vue)
+  initUse(Vue) // 初始化插件，实现原理是 执行插件的install方法/执行插件函数
+  initMixin(Vue) // 初始化mixin，实现原理是 合并options
+  initExtend(Vue) // 实现函数和类的继承
   initAssetRegisters(Vue)
 }

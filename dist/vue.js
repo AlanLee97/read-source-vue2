@@ -4648,16 +4648,16 @@
   function initState (vm) {
     vm._watchers = [];
     var opts = vm.$options;
-    if (opts.props) { initProps(vm, opts.props); }
-    if (opts.methods) { initMethods(vm, opts.methods); }
+    if (opts.props) { initProps(vm, opts.props); } // 将props定义成响应式
+    if (opts.methods) { initMethods(vm, opts.methods); } // 将methods的函数平铺到vm
     if (opts.data) {
-      initData(vm);
+      initData(vm); // 将data定义成响应式
     } else {
       observe(vm._data = {}, true /* asRootData */);
     }
-    if (opts.computed) { initComputed(vm, opts.computed); }
+    if (opts.computed) { initComputed(vm, opts.computed); } // 初始化computed
     if (opts.watch && opts.watch !== nativeWatch) {
-      initWatch(vm, opts.watch);
+      initWatch(vm, opts.watch); // 初始化watch,createWatcher->vm.$watch
     }
   }
 
@@ -4796,7 +4796,7 @@
       // component prototype. We only need to define computed properties defined
       // at instantiation here.
       if (!(key in vm)) {
-        defineComputed(vm, key, userDef);
+        defineComputed(vm, key, userDef); // 定义computed，挂getter函数，将computed的方法名挂载到vm上，提供computedGettergetter函数
       } else {
         if (key in vm.$data) {
           warn(("The computed property \"" + key + "\" is already defined in data."), vm);
@@ -4994,6 +4994,7 @@
         // internal component options needs special treatment.
         initInternalComponent(vm, options);
       } else {
+        // 合并选项，并挂载到$options
         vm.$options = mergeOptions(
           resolveConstructorOptions(vm.constructor),
           options || {},
@@ -5006,14 +5007,14 @@
       }
       // expose real self
       vm._self = vm;
-      initLifecycle(vm);
-      initEvents(vm);
-      initRender(vm);
-      callHook(vm, 'beforeCreate');
-      initInjections(vm); // resolve injections before data/props
-      initState(vm);
-      initProvide(vm); // resolve provide after data/props
-      callHook(vm, 'created');
+      initLifecycle(vm); // 初始化生命周期：$parent,$children,$refs,_watcher,_isMounted,_isDestroyed,_isBeingDestroyed等一些属性
+      initEvents(vm); // 初始化事件收集对象_events，初始化父组件的监听器
+      initRender(vm); // 初始化$slots,$scopedSlots,$createElement，响应式$attrs,$listeners
+      callHook(vm, 'beforeCreate'); // 执行beforeCreate
+      initInjections(vm); // resolve injections before data/props // 初始化inject
+      initState(vm); // 初始化props,data,computed,watch
+      initProvide(vm); // resolve provide after data/props // 初始化 provide，原理：把options.provide挂载到vm._provide
+      callHook(vm, 'created'); // 执行created
 
       /* istanbul ignore if */
       if (config.performance && mark) {
@@ -5084,19 +5085,23 @@
     return modified
   }
 
-  function Vue (options) {
+  function Vue (options) { // 定义Vue函数，开发者new Vue()时，才会执行_init()
     if (!(this instanceof Vue)
     ) {
       warn('Vue is a constructor and should be called with the `new` keyword');
     }
-    this._init(options);
+
+    // 开发者new Vue()时，才会执行
+    // 里面做的操作：初始化生命周期、事件收集对象、渲染需要的一些属性、beforeCreate/created、状态(props,data,computed,watch)、provide/inject、执行挂载$mount
+    this._init(options); 
   }
 
-  initMixin(Vue);
-  stateMixin(Vue);
-  eventsMixin(Vue);
-  lifecycleMixin(Vue);
-  renderMixin(Vue);
+  // 外部导入这个文件时，会先执行一下代码
+  initMixin(Vue); // 初始化，给_init赋值一个初始化的函数
+  stateMixin(Vue); // 设置状态，在Vue.prototype上挂了$data,$props,$set,$delete,$watch实例API方法
+  eventsMixin(Vue); // 初始化事件，就是个发布订阅模式，在Vue.prototype上挂上$on,$once,$off,$emit 四个方法
+  lifecycleMixin(Vue); // 初始化一部分生命周期，在Vue.prototype上挂了_update,$forceUpdate,$destroy 三个方法
+  renderMixin(Vue); // 初始化渲染，安装渲染助手installRenderHelpers，挂载$nextTick, _render 两个方法
 
   /*  */
 
@@ -5435,6 +5440,7 @@
     // exposed util methods.
     // NOTE: these are not considered part of the public API - avoid relying on
     // them unless you are aware of the risk.
+    // 给构造器添加对象属性，这种方式添加的属性，在new出来的对象中是拿不到的，要么只能通过对象.constructor.util才能拿到绑定在构造器上的属性
     Vue.util = {
       warn: warn,
       extend: extend,
@@ -5461,14 +5467,19 @@
     // components with in Weex's multi-instance scenarios.
     Vue.options._base = Vue;
 
+    // 让子组件继承KeepAlive
     extend(Vue.options.components, builtInComponents);
 
-    initUse(Vue);
-    initMixin$1(Vue);
-    initExtend(Vue);
+    initUse(Vue); // 初始化插件，实现原理是 执行插件的install方法/执行插件函数
+    initMixin$1(Vue); // 初始化mixin，实现原理是 合并options
+    initExtend(Vue); // 实现函数和类的继承
     initAssetRegisters(Vue);
   }
 
+  // 再初始化全局API
+  // 这里会给Vue构造器函数上挂上一些公有API，挂载的有util,set,del,nextTick,observable,options，
+  // 还让options.component继承了内置组件builtInComponents——KeepAlive
+  // 还做了一些初始化initUse,initMixin,initExtend,initAssetRegisters
   initGlobalAPI(Vue);
 
   Object.defineProperty(Vue.prototype, '$isServer', {

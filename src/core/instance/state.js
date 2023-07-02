@@ -49,16 +49,16 @@ export function proxy (target: Object, sourceKey: string, key: string) {
 export function initState (vm: Component) {
   vm._watchers = []
   const opts = vm.$options
-  if (opts.props) initProps(vm, opts.props)
-  if (opts.methods) initMethods(vm, opts.methods)
+  if (opts.props) initProps(vm, opts.props) // 将props定义成响应式
+  if (opts.methods) initMethods(vm, opts.methods) // 将methods的函数平铺到vm
   if (opts.data) {
-    initData(vm)
+    initData(vm) // 将data定义成响应式
   } else {
     observe(vm._data = {}, true /* asRootData */)
   }
-  if (opts.computed) initComputed(vm, opts.computed)
+  if (opts.computed) initComputed(vm, opts.computed) // 初始化computed
   if (opts.watch && opts.watch !== nativeWatch) {
-    initWatch(vm, opts.watch)
+    initWatch(vm, opts.watch) // 初始化watch,createWatcher->vm.$watch
   }
 }
 
@@ -98,7 +98,7 @@ function initProps (vm: Component, propsOptions: Object) {
         }
       })
     } else {
-      defineReactive(props, key, value)
+      defineReactive(props, key, value) // 将props定义成响应式
     }
     // static props are already proxied on the component's prototype
     // during Vue.extend(). We only need to proxy props defined at
@@ -197,7 +197,7 @@ function initComputed (vm: Component, computed: Object) {
     // component prototype. We only need to define computed properties defined
     // at instantiation here.
     if (!(key in vm)) {
-      defineComputed(vm, key, userDef)
+      defineComputed(vm, key, userDef) // 定义computed，挂getter函数，将computed的方法名挂载到vm上，提供computedGettergetter函数
     } else if (process.env.NODE_ENV !== 'production') {
       if (key in vm.$data) {
         warn(`The computed property "${key}" is already defined in data.`, vm)

@@ -40,6 +40,12 @@ debugger
 // app Vue instance
 var app = new Vue({
   // app initial state
+  props: {
+    hello: {
+      type: String,
+      default: 'hello todomvc'
+    }
+  },
   data: {
     todos: todoStorage.fetch(),
     newTodo: '',
@@ -157,6 +163,9 @@ window.addEventListener('hashchange', onHashChange)
 onHashChange()
 
 // mount
+// 后置挂载元素
+// mountComponent -> updateComponent(更新时 beforeUpdate) / new Watcher(初始化时), 观察vm，vm变化->执行updateComponent
+// mounted
 app.$mount('.todoapp')
 
 console.log('alan-> app', app)

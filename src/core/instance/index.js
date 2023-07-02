@@ -11,7 +11,10 @@ function Vue (options) { // 定义Vue函数，开发者new Vue()时，才会执�
   ) {
     warn('Vue is a constructor and should be called with the `new` keyword')
   }
-  this._init(options) // 开发者new Vue()时，才会执行
+
+  // 开发者new Vue()时，才会执行
+  // 里面做的操作：初始化生命周期、事件收集对象、渲染需要的一些属性、beforeCreate/created、状态(props,data,computed,watch)、provide/inject、执行挂载$mount
+  this._init(options) 
 }
 
 // 外部导入这个文件时，会先执行一下代码

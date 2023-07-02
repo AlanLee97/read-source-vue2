@@ -4,6 +4,9 @@ import { isServerRendering } from 'core/util/env'
 import { FunctionalRenderContext } from 'core/vdom/create-functional-component'
 
 // 再初始化全局API
+// 这里会给Vue构造器函数上挂上一些公有API，挂载的有util,set,del,nextTick,observable,options，
+// 还让options.component继承了内置组件builtInComponents——KeepAlive
+// 还做了一些初始化initUse,initMixin,initExtend,initAssetRegisters
 initGlobalAPI(Vue)
 
 Object.defineProperty(Vue.prototype, '$isServer', {

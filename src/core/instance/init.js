@@ -35,6 +35,7 @@ export function initMixin (Vue: Class<Component>) {
       // internal component options needs special treatment.
       initInternalComponent(vm, options)
     } else {
+      // 合并选项，并挂载到$options
       vm.$options = mergeOptions(
         resolveConstructorOptions(vm.constructor),
         options || {},
@@ -49,14 +50,14 @@ export function initMixin (Vue: Class<Component>) {
     }
     // expose real self
     vm._self = vm
-    initLifecycle(vm)
-    initEvents(vm)
-    initRender(vm)
-    callHook(vm, 'beforeCreate')
-    initInjections(vm) // resolve injections before data/props
-    initState(vm)
-    initProvide(vm) // resolve provide after data/props
-    callHook(vm, 'created')
+    initLifecycle(vm) // 初始化生命周期：$parent,$children,$refs,_watcher,_isMounted,_isDestroyed,_isBeingDestroyed等一些属性
+    initEvents(vm) // 初始化事件收集对象_events，初始化父组件的监听器
+    initRender(vm) // 初始化$slots,$scopedSlots,$createElement，响应式$attrs,$listeners
+    callHook(vm, 'beforeCreate') // 执行beforeCreate
+    initInjections(vm) // resolve injections before data/props // 初始化inject
+    initState(vm) // 初始化props,data,computed,watch
+    initProvide(vm) // resolve provide after data/props // 初始化 provide，原理：把options.provide挂载到vm._provide
+    callHook(vm, 'created') // 执行created
 
     /* istanbul ignore if */
     if (process.env.NODE_ENV !== 'production' && config.performance && mark) {
