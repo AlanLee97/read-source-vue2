@@ -1,6 +1,6 @@
 /*!
  * Vue.js v2.6.14
- * (c) 2014-2021 Evan You
+ * (c) 2014-2023 Evan You
  * Released under the MIT License.
  */
 (function (global, factory) {
@@ -12012,3 +12012,4 @@
   return Vue;
 
 }));
+//# sourceMappingURL=vue.js.map

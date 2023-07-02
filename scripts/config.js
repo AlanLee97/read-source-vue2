@@ -223,6 +223,7 @@ function genConfig (name) {
       alias(Object.assign({}, aliases, opts.alias))
     ].concat(opts.plugins || []),
     output: {
+      sourcemap: true,
       file: opts.dest,
       format: opts.format,
       banner: opts.banner,

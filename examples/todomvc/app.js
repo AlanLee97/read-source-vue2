@@ -1,3 +1,4 @@
+/* eslint-disable no-undef */
 // Full spec-compliant TodoMVC with localStorage persistence
 // and hash-based routing in ~150 lines.
 
@@ -34,6 +35,8 @@ var filters = {
   }
 }
 
+// eslint-disable-next-line no-debugger
+debugger
 // app Vue instance
 var app = new Vue({
   // app initial state
@@ -155,3 +158,6 @@ onHashChange()
 
 // mount
 app.$mount('.todoapp')
+
+console.log('alan-> app', app)
+window.appVue = app
