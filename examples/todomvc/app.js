@@ -47,10 +47,12 @@ var app = new Vue({
     }
   },
   data: {
+    count: 0,
     todos: todoStorage.fetch(),
     newTodo: '',
     editedTodo: null,
-    visibility: 'all'
+    visibility: 'all',
+    currentTodoItem: {}
   },
 
   // watch todos change for localStorage persistence
@@ -93,6 +95,13 @@ var app = new Vue({
   // methods that implement data logic.
   // note there's no DOM manipulation here at all.
   methods: {
+    setCurrent(item) {
+      // this.count += 1
+      this.currentTodoItem = item
+      // setTimeout(() => {
+      //   console.log('alan->count', this.count)
+      // })
+    },
     addTodo: function () {
       var value = this.newTodo && this.newTodo.trim()
       if (!value) {

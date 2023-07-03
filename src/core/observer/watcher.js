@@ -177,6 +177,8 @@ export default class Watcher {
    * Scheduler job interface.
    * Will be called by the scheduler.
    */
+  // Q：执行完cb后，是怎么更新视图的？
+  // A：Vue根组件本身会有一个Watcher，它对应的cb函数就是更新函数vm._update(vm.render())，_update函数会通过diff找到需要更新的地方去更新视图
   run () {
     if (this.active) {
       const value = this.get()

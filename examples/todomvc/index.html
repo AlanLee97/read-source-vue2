@@ -23,7 +23,8 @@
           <li v-for="todo in filteredTodos"
             class="todo"
             :key="todo.id"
-            :class="{ completed: todo.completed, editing: todo == editedTodo }">
+            :class="{ completed: todo.completed, editing: todo == editedTodo }" 
+            @click="setCurrent(todo)">
             <div class="view">
               <input class="toggle" type="checkbox" v-model="todo.completed">
               <label @dblclick="editTodo(todo)">{{ todo.title }}</label>

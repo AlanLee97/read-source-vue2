@@ -1,3 +1,4 @@
+/* eslint-disable no-unused-vars */
 /* eslint-disable no-undef */
 /* eslint-disable no-debugger */
 
@@ -76,11 +77,16 @@ const countDemo = {
 var app = new Vue({
   name: 'SimpleDemo',
   components: {
-    countDemo
+    // countDemo
   },
   data() {
     return {
       msg: 'Hello Simple Demo'
+    }
+  },
+  methods: {
+    changeMsg() {
+      this.msg += '>'
     }
   }
 })
