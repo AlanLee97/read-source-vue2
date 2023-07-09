@@ -186,6 +186,7 @@ export function mountComponent (
       measure(`vue ${name} patch`, startTag, endTag)
     }
   } else {
+    // 这里是核心逻辑，把vm._render()执行结果VNode作为参数传递给_update执行
     updateComponent = () => {
       vm._update(vm._render(), hydrating)
     }
@@ -194,6 +195,8 @@ export function mountComponent (
   // we set this to vm._watcher inside the watcher's constructor
   // since the watcher's initial patch may call $forceUpdate (e.g. inside child
   // component's mounted hook), which relies on vm._watcher being already defined
+  // 我们设它为vm._watcher在观察器的构造函数中，因为观察器的初始补丁可能调用$forceUpdate(例如在子组件的挂载钩子中)，它依赖于vm._watchr已经定义
+  // 这里是最核心的逻辑：把updateComponent更新函数放到Watcher的回调中进行监听，如果vm的数据有更新，则执行updateComponent函数，更新视图。
   new Watcher(vm, updateComponent, noop, {
     before () {
       if (vm._isMounted && !vm._isDestroyed) {

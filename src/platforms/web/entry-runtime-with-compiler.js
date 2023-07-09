@@ -14,7 +14,9 @@ const idToTemplate = cached(id => {
   return el && el.innerHTML
 })
 
+// 先缓存一份原来的$mount方法
 const mount = Vue.prototype.$mount
+// 重新赋值$mount方法，主要是要加入编译函数compileToFunctions生成render方法
 Vue.prototype.$mount = function (
   el?: string | Element,
   hydrating?: boolean

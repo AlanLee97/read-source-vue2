@@ -35,11 +35,68 @@ var filters = {
   }
 }
 
+// eslint-disable-next-line no-unused-vars
+const TodoCount = {
+  name: 'TodoCount',
+  template: `<section>
+    <div>todoCount: {{count}}</div>
+    <div><button @click="add" style="background: red; padding: 10px;">+1</button></div>
+  </section>`,
+  inject: ['foo'],
+  props: {
+    value: {
+      type: Number,
+      default: 0
+    }
+  },
+  data() {
+    return {
+      count: 0
+    }
+  },
+  beforeCreate() {
+    console.log('alan->', 'todo-cpn beforeCreate')
+  },
+  created() {
+    console.log('injected foo', this.foo) // => "bar"
+    console.log('alan->', 'todo-cpn created')
+  },
+  beforeMount() {
+    console.log('alan->', 'todo-cpn beforeMount')
+  },
+  mounted() {
+    console.log('alan->', 'todo-cpn mounted')
+  },
+  methods: {
+    add() {
+      this.count += 1;
+    }
+  }
+}
+
 // eslint-disable-next-line no-debugger
 debugger
 // app Vue instance
 var app = new Vue({
   // app initial state
+  beforeCreate() {
+    console.log('alan->', 'root-app beforeCreate')
+  },
+  created() {
+    console.log('alan->', 'root-app created')
+  },
+  beforeMount() {
+    console.log('alan->', 'root-app beforeMount')
+  },
+  mounted() {
+    console.log('alan->', 'root-app mounted')
+  },
+  // components: {
+  //   TodoCount
+  // },
+  provide: {
+    foo: 'bar'
+  },
   props: {
     hello: {
       type: String,

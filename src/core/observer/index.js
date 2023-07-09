@@ -107,6 +107,7 @@ function copyAugment (target: Object, src: Object, keys: Array<string>) {
  * returns the new observer if successfully observed,
  * or the existing observer if the value already has one.
  */
+// 遍历所有属性并将它们转换为getter/setter。此方法只在值类型为Object时调用。
 export function observe (value: any, asRootData: ?boolean): Observer | void {
   if (!isObject(value) || value instanceof VNode) {
     return
@@ -132,6 +133,7 @@ export function observe (value: any, asRootData: ?boolean): Observer | void {
 /**
  * Define a reactive property on an Object.
  */
+// 将对象的属性定义成响应式
 export function defineReactive (
   obj: Object,
   key: string,
