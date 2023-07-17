@@ -986,6 +986,7 @@
    * returns the new observer if successfully observed,
    * or the existing observer if the value already has one.
    */
+  // 遍历所有属性并将它们转换为getter/setter。此方法只在值类型为Object时调用。
   function observe (value, asRootData) {
     if (!isObject(value) || value instanceof VNode) {
       return
@@ -1011,6 +1012,7 @@
   /**
    * Define a reactive property on an Object.
    */
+  // 将对象的属性定义成响应式
   function defineReactive$$1 (
     obj,
     key,
@@ -1913,15 +1915,18 @@
 
   var isUsingMicroTask = false;
 
+  // 收集回调函数的队列
   var callbacks = [];
+  // 定义状态
   var pending = false;
 
+  // 清空回调队列的函数
   function flushCallbacks () {
     pending = false;
     var copies = callbacks.slice(0);
     callbacks.length = 0;
     for (var i = 0; i < copies.length; i++) {
-      copies[i]();
+      copies[i](); // 把回调队列中的函数取出来执行
     }
   }
 
@@ -1936,6 +1941,8 @@
   // where microtasks have too high a priority and fire in between supposedly
   // sequential events (e.g. #4521, #6690, which have workarounds)
   // or even between bubbling of the same event (#6566).
+
+  // 定义定时器函数，后面赋值
   var timerFunc;
 
   // The nextTick behavior leverages the microtask queue, which can be accessed
@@ -1945,38 +1952,51 @@
   // completely stops working after triggering a few times... so, if native
   // Promise is available, we will use it:
   /* istanbul ignore next, $flow-disable-line */
+  // 如果运行环境支持Promise，则使用Promise
   if (typeof Promise !== 'undefined' && isNative(Promise)) {
     var p = Promise.resolve();
-    timerFunc = function () {
-      p.then(flushCallbacks);
+    timerFunc = function () { // 定义行数，赋值给timerFunc
+      p.then(flushCallbacks); // 将flushCallbacks作为resolve的回调函数，执行完回调队列中的函数
       // In problematic UIWebViews, Promise.then doesn't completely break, but
       // it can get stuck in a weird state where callbacks are pushed into the
       // microtask queue but the queue isn't being flushed, until the browser
       // needs to do some other work, e.g. handle a timer. Therefore we can
       // "force" the microtask queue to be flushed by adding an empty timer.
+
+      // ios中有特殊情况
+      // 在有问题的UIWebViews中，Promise.then不会完全中断，但它可能会陷入一种奇怪的状态，回调被推入微任务队列，但队列不会被刷新，直到浏览器需要做一些其他工作，例如处理计时器。
+      // 因此，我们可以通过添加空计时器来“强制”刷新微任务队列。
       if (isIOS) { setTimeout(noop); }
     };
-    isUsingMicroTask = true;
+    isUsingMicroTask = true; // 标记使用微任务
   } else if (!isIE && typeof MutationObserver !== 'undefined' && (
     isNative(MutationObserver) ||
     // PhantomJS and iOS 7.x
     MutationObserver.toString() === '[object MutationObserverConstructor]'
   )) {
+    // 当运行环境不支持Promise时，判断下是否支持MutationObserver，如支持则使用MutationObserver
     // Use MutationObserver where native Promise is not available,
     // e.g. PhantomJS, iOS7, Android 4.4
     // (#6466 MutationObserver is unreliable in IE11)
     var counter = 1;
+    // 用flushCallbacks作为MutationObserver的回调函数
     var observer = new MutationObserver(flushCallbacks);
+    // 创建临时的文本节点，用MutationObserver观测它的变化，以触发new MutationObserver(flushCallbacks)执行
     var textNode = document.createTextNode(String(counter));
     observer.observe(textNode, {
       characterData: true
     });
-    timerFunc = function () {
+    timerFunc = function () { // 将更改DOM的函数赋值给timerFunc
+      // 当执行nextTick时，会执行timerFunc，这里改变textNode的值，每次+1
+      // 触发new MutationObserver(flushCallbacks)执行
       counter = (counter + 1) % 2;
       textNode.data = String(counter);
     };
     isUsingMicroTask = true;
   } else if (typeof setImmediate !== 'undefined' && isNative(setImmediate)) {
+    // 当运行环境不支持Promise、MutationObserver时，判断下是否支持setImmediate，如支持则使用setImmediate
+    // setImmediate这个API只在node环境下可用
+
     // Fallback to setImmediate.
     // Technically it leverages the (macro) task queue,
     // but it is still a better choice than setTimeout.
@@ -1984,14 +2004,17 @@
       setImmediate(flushCallbacks);
     };
   } else {
+    // 如果上面的方式都不行，则使用setTimeout
     // Fallback to setTimeout.
     timerFunc = function () {
       setTimeout(flushCallbacks, 0);
     };
   }
 
+  // 调用$nextTick时，执行该函数
   function nextTick (cb, ctx) {
-    var _resolve;
+    var _resolve; // 缓存Promise的resolve
+    // 收集回调函数
     callbacks.push(function () {
       if (cb) {
         try {
@@ -2000,11 +2023,13 @@
           handleError(e, ctx, 'nextTick');
         }
       } else if (_resolve) {
+        // 执行Promise的resolve回调
         _resolve(ctx);
       }
     });
     if (!pending) {
       pending = true;
+      // 执行定时器函数，核心逻辑
       timerFunc();
     }
     // $flow-disable-line
@@ -4078,6 +4103,7 @@
         measure(("vue " + name + " patch"), startTag, endTag);
       };
     } else {
+      // 这里是核心逻辑，把vm._render()执行结果VNode作为参数传递给_update执行
       updateComponent = function () {
         vm._update(vm._render(), hydrating);
       };
@@ -4086,6 +4112,8 @@
     // we set this to vm._watcher inside the watcher's constructor
     // since the watcher's initial patch may call $forceUpdate (e.g. inside child
     // component's mounted hook), which relies on vm._watcher being already defined
+    // 我们设它为vm._watcher在观察器的构造函数中，因为观察器的初始补丁可能调用$forceUpdate(例如在子组件的挂载钩子中)，它依赖于vm._watchr已经定义
+    // 这里是最核心的逻辑：把updateComponent更新函数放到Watcher的回调中进行监听，如果vm的数据有更新，则执行updateComponent函数，更新视图。
     new Watcher(vm, updateComponent, noop, {
       before: function before () {
         if (vm._isMounted && !vm._isDestroyed) {
@@ -4564,6 +4592,8 @@
    * Scheduler job interface.
    * Will be called by the scheduler.
    */
+  // Q：执行完cb后，是怎么更新视图的？
+  // A：Vue根组件本身会有一个Watcher，它对应的cb函数就是更新函数vm._update(vm.render())，_update函数会通过diff找到需要更新的地方去更新视图
   Watcher.prototype.run = function run () {
     if (this.active) {
       var value = this.get();
@@ -4890,6 +4920,7 @@
 
   function initWatch (vm, watch) {
     for (var key in watch) {
+      console.log('alan->watch[key]', key);
       var handler = watch[key];
       if (Array.isArray(handler)) {
         for (var i = 0; i < handler.length; i++) {
@@ -11934,7 +11965,9 @@
     return el && el.innerHTML
   });
 
+  // 先缓存一份原来的$mount方法
   var mount = Vue.prototype.$mount;
+  // 重新赋值$mount方法，主要是要加入编译函数compileToFunctions生成render方法
   Vue.prototype.$mount = function (
     el,
     hydrating

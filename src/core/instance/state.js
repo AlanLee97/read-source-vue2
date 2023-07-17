@@ -292,6 +292,7 @@ function initMethods (vm: Component, methods: Object) {
 
 function initWatch (vm: Component, watch: Object) {
   for (const key in watch) {
+    console.log('alan->watch[key]', key)
     const handler = watch[key]
     if (Array.isArray(handler)) {
       for (let i = 0; i < handler.length; i++) {
