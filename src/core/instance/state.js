@@ -320,6 +320,7 @@ function createWatcher (
   return vm.$watch(expOrFn, handler, options)
 }
 
+// 这个函数是在new Vue之前调用的
 export function stateMixin (Vue: Class<Component>) {
   // flow somehow has problems with directly declared definition object
   // when using Object.defineProperty, so we have to procedurally build up
@@ -357,6 +358,7 @@ export function stateMixin (Vue: Class<Component>) {
     }
     options = options || {}
     options.user = true
+    // 重点逻辑，需要了解new Watcher做了什么事情
     const watcher = new Watcher(vm, expOrFn, cb, options)
     if (options.immediate) {
       const info = `callback for immediate watcher "${watcher.expression}"`

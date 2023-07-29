@@ -8,30 +8,30 @@ var app = new Vue({
   data() {
     return {
       count: 0,
-      countObj: {
-        value: 0
-      }
+      // countObj: {
+      //   value: 0
+      // }
     }
   },
   watch: {
-    count(newVal) {
-      console.log('alan->watch count', newVal)
+    count(newVal, oldVal) {
+      console.log('alan->watch count', newVal, oldVal)
     },
-    countObj: {
-      handler(newVal) {
-        console.log('alan->watch countObj', newVal)
-      },
-      immediate: true,
-      deep: true
-    },
-    'countObj.value': function (newVal) {
-      console.log('alan->watch countObj.value', newVal)
-    },
+    // countObj: {
+    //   handler(newVal) {
+    //     console.log('alan->watch countObj', newVal)
+    //   },
+    //   immediate: true,
+    //   deep: true
+    // },
+    // 'countObj.value': function (newVal) {
+    //   console.log('alan->watch countObj.value', newVal)
+    // },
   },
   methods: {
     plus() {
       this.count += 1;
-      this.countObj.value += 1;
+      // this.countObj.value += 1;
     }
   }
 })

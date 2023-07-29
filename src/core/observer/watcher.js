@@ -45,8 +45,8 @@ export default class Watcher {
 
   constructor (
     vm: Component,
-    expOrFn: string | Function,
-    cb: Function,
+    expOrFn: string | Function, // 定义watch时的键名
+    cb: Function, // 定义watch时的键名对应的函数
     options?: ?Object,
     isRenderWatcher?: boolean
   ) {
@@ -98,12 +98,15 @@ export default class Watcher {
 
   /**
    * Evaluate the getter, and re-collect dependencies.
+   * 求值getter，并重新收集依赖
    */
   get () {
+    // 把当前实例的值放到Dep.target中
     pushTarget(this)
     let value
     const vm = this.vm
     try {
+      // 取options.data中的值，触发getter，收集依赖
       value = this.getter.call(vm, vm)
     } catch (e) {
       if (this.user) {
@@ -117,6 +120,7 @@ export default class Watcher {
       if (this.deep) {
         traverse(value)
       }
+      // 把Dep.target清空
       popTarget()
       this.cleanupDeps()
     }
