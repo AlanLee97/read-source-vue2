@@ -238,19 +238,24 @@ export function defineComputed (
       )
     }
   }
+  // 把computed的属性，通过Object.defineProperty的方式定义到Vue/Vue组件实例上，属性描述符为sharedPropertyDefinition
+  // 其中sharedPropertyDefinition的get就是createComputedGetter返回的一个取值函数computedGetter
   Object.defineProperty(target, key, sharedPropertyDefinition)
 }
 
+// 创建函数computed取值函数
 function createComputedGetter (key) {
   return function computedGetter () {
     const watcher = this._computedWatchers && this._computedWatchers[key]
     if (watcher) {
       if (watcher.dirty) {
+        // 执行computed中的函数，把返回值保存到value中
         watcher.evaluate()
       }
       if (Dep.target) {
         watcher.depend()
       }
+      // 返回computed中函数的返回值
       return watcher.value
     }
   }
