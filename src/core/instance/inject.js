@@ -14,6 +14,7 @@ export function initProvide (vm: Component) {
 }
 
 export function initInjections (vm: Component) {
+  // 根据inject的提供的key，寻找provide中对应的值
   const result = resolveInject(vm.$options.inject, vm)
   if (result) {
     toggleObserving(false)
@@ -29,6 +30,7 @@ export function initInjections (vm: Component) {
           )
         })
       } else {
+        // 将inject的key对应的provide的值，绑定到vue/vue组件实例上
         defineReactive(vm, key, result[key])
       }
     })
@@ -36,6 +38,7 @@ export function initInjections (vm: Component) {
   }
 }
 
+// 根据inject的提供的key，寻找provide中对应的值
 export function resolveInject (inject: any, vm: Component): ?Object {
   if (inject) {
     // inject is :any because flow is not smart enough to figure out cached
@@ -50,8 +53,10 @@ export function resolveInject (inject: any, vm: Component): ?Object {
       if (key === '__ob__') continue
       const provideKey = inject[key].from
       let source = vm
+      // 遍历找父级provide
       while (source) {
         if (source._provided && hasOwn(source._provided, provideKey)) {
+          // 找到父级的provide的属性，放到result，再返回
           result[key] = source._provided[provideKey]
           break
         }
