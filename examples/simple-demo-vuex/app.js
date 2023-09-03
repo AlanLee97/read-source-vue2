@@ -4,7 +4,7 @@
 
 const storeConfig = {
   state: {
-    hello: '111222'
+    hello: 'AlanLee'
   },
   mutations: {
     changeHello(state, newVal) {
@@ -27,16 +27,6 @@ Vue.use(store)
 var app = new Vue({
   name: 'SimpleDemo_Vuex',
   store,
-  data() {
-    return {
-
-    }
-  },
-  computed: {
-    // hello() {
-    //   return this.$store.state.hello
-    // }
-  },
   methods: {
     changeHello() {
       // this.$store.commit('changeHello', Math.random())
